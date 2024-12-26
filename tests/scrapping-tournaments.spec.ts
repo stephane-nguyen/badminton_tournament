@@ -19,6 +19,18 @@ async function getUniqueFilename(
   return path.join(directory, fileName);
 }
 
+type Tournament = {
+  name: string;
+  date: string;
+  location: string;
+  timeRemaining: string;
+};
+
+// Function to convert Tournament data to string
+function stringifyData(tournaments: Tournament[]): string {
+  return JSON.stringify(tournaments, null, 2); // Pretty-print the JSON data
+}
+
 test("test", async ({ page }) => {
   await page.goto("https://badnet.fr/");
 
@@ -64,15 +76,9 @@ test("test", async ({ page }) => {
     }
 
     const tournamentElements = searchResults.querySelectorAll(".row");
-    const data: {
-      name: string;
-      date: string;
-      location: string;
-      timeRemaining: string;
-    }[] = [];
+    const data: Tournament[] = [];
 
     tournamentElements.forEach((element) => {
-      // const cells = tournamentElements.querySelector(".cell");
       const name =
         element.querySelector(".name")?.textContent?.trim() || "Unknown Name";
       const date =
@@ -89,11 +95,6 @@ test("test", async ({ page }) => {
     return data;
   });
 
-  // Convert data to a string format
-  const formattedData = tournaments
-    .map((t) => `${t.name} | ${t.date} | ${t.location}`)
-    .join("\n");
-
   // Define the base name and directory for the file
   const directory = "./";
   const baseName = "tournament_list";
@@ -105,6 +106,9 @@ test("test", async ({ page }) => {
     directory
   );
 
+  // Needed to respect typing of writeFileSync
+  const stringifiedTournaments = stringifyData(tournaments);
+
   // Write the data to the file
-  fs.writeFileSync(uniqueFilename, formattedData);
+  fs.writeFileSync(uniqueFilename, stringifiedTournaments);
 });
