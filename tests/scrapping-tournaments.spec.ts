@@ -20,10 +20,12 @@ async function getUniqueFilename(
 }
 
 type Tournament = {
+  number: number;
   name: string;
   date: string;
   location: string;
   timeRemaining: string;
+  playersCount: string;
 };
 
 // Function to convert Tournament data to string
@@ -39,7 +41,7 @@ test("test", async ({ page }) => {
   await page
     .getByPlaceholder("Rechercher une ville...")
     .fill("Neuilly-sur-Marne");
-  await page.getByText("Neuilly-sur-Marne (93, Île-de").click();
+  await page.getByText("Neuilly-sur-Marne (93, Île-de-France)").click();
   // Km
   await page.locator("#rayon").click();
   await page.locator("#rayon").fill("50");
@@ -68,29 +70,39 @@ test("test", async ({ page }) => {
 
   // Scrape tournament data
   const tournaments = await page.evaluate(() => {
+    // Results based on test automation
     const searchResults = document.getElementById("search_results");
     if (searchResults === null) {
       return [
-        { name: "none", date: "none", location: "none", timeRemaining: "none" },
+        {
+          number: 1,
+          name: "none",
+          date: "none",
+          location: "none",
+          timeRemaining: "none",
+          playersCount: "0",
+        },
       ];
     }
 
     const tournamentElements = searchResults.querySelectorAll(".row");
     const data: Tournament[] = [];
 
-    tournamentElements.forEach((element) => {
+    tournamentElements.forEach((element, index) => {
+      const number = index + 1;
       const name =
-        element.querySelector(".name")?.textContent?.trim() || "Unknown Name";
+        element.querySelector(".name")?.textContent?.trim() || "Unknown";
       const date =
-        element.querySelector(".date")?.textContent?.trim() || "Unknown Date";
+        element.querySelector(".date")?.textContent?.trim() || "Unknown";
       const location =
-        element.querySelector(".location")?.textContent?.trim() ||
-        "Unknown Location";
+        element.querySelector(".location")?.textContent?.trim() || "Unknown";
       const timeRemaining =
-        element.querySelector(".limit alert")?.textContent?.trim() ||
-        "No limit alert for inscription";
+        element.querySelector(".limit alert")?.textContent?.trim() || "Unknown";
 
-      data.push({ name, date, location, timeRemaining });
+      const playersCount =
+        element.querySelector(".count")?.textContent?.trim() || "Unknown";
+
+      data.push({ number, name, date, location, timeRemaining, playersCount });
     });
     return data;
   });
