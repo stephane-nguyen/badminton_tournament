@@ -107,7 +107,4 @@ test("test", async ({ page }) => {
 
   // Write the data to the file
   fs.writeFileSync(uniqueFilename, formattedData);
-  console.log(`Tournaments written to: ${uniqueFilename}`);
-
-  console.log("Tournaments:", tournaments);
 });
