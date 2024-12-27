@@ -1,36 +1,8 @@
 import { test } from "@playwright/test";
 
-import fs from "fs";
-import path from "path";
-
-async function getUniqueFilename(
-  baseName: string,
-  extension: string,
-  directory: string
-): Promise<string> {
-  let counter = 0;
-  let fileName = `${baseName}${extension}`;
-
-  // Check if the file exists and increment the counter
-  while (fs.existsSync(path.join(directory, fileName))) {
-    counter++;
-    fileName = `${baseName}${counter}${extension}`;
-  }
-  return path.join(directory, fileName);
-}
-
-type Tournament = {
-  name: string;
-  date: string;
-  location: string;
-  timeRemaining: string;
-  playersCount: string;
-};
-
-// Function to convert Tournament data to string
-function stringifyData(tournaments: Tournament[]): string {
-  return JSON.stringify(tournaments, null, 2); // Pretty-print the JSON data
-}
+import { stringifyData, Tournament } from "../helpers/Tournament";
+import { getUniqueFilename, writeDataToFile } from "../helpers/file";
+import { generateHTMLTable, sendEmail } from "../helpers/email";
 
 test("test", async ({ page }) => {
   await page.goto("https://badnet.fr/");
@@ -44,23 +16,28 @@ test("test", async ({ page }) => {
   // Km
   await page.locator("#rayon").click();
   await page.locator("#rayon").fill("50");
-
+  // Senior
+  await page.locator("div:nth-child(2) > label").first().click();
+  // Simple
+  await page.locator("div:nth-child(2) > .flex > div > label").first().click();
+  // Classement P
   await page
     .locator("div:nth-child(3) > .flex > div:nth-child(4) > label")
     .click();
+  // P12
   await page.locator("div:nth-child(6) > .flex > .div-p > label").click();
-  // Senior
-  await page.locator("div:nth-child(2) > label").first().click();
-  await page.locator("div:nth-child(2) > .flex > div > label").first().click();
+  // Ouvert aux inscriptions
   await page
     .locator("div:nth-child(2) > div:nth-child(2) > .flex > div > label")
     .first()
     .click();
+  // Prochainement ouvert
   await page
     .locator(
       "div:nth-child(2) > div:nth-child(2) > .flex > div:nth-child(2) > label"
     )
     .click();
+  // Place disponibles
   await page
     .locator(
       "div:nth-child(2) > div:nth-child(2) > .flex > div:nth-child(3) > label"
@@ -102,7 +79,7 @@ test("test", async ({ page }) => {
       const secondCell = cells[1];
 
       const name =
-        firstCell.querySelector(".name")?.textContent?.trim() || "Unknown";
+        firstCell.querySelector(".name")?.textContent?.trim() || "N/A";
 
       // Skip internal tournaments
       let checkInternalTournament = name.toLowerCase();
@@ -114,27 +91,27 @@ test("test", async ({ page }) => {
       }
 
       const date =
-        firstCell.querySelector(".date")?.textContent?.trim() || "Unknown";
+        firstCell.querySelector(".date")?.textContent?.trim() || "N/A";
       const location =
-        firstCell.querySelector(".location")?.textContent?.trim() || "Unknown";
+        firstCell.querySelector(".location")?.textContent?.trim() || "N/A";
 
       // Inscriptions
       // Handle all case of css class: .limit, .limit open, .limit alert...
       const timeRemainingElement = secondCell.querySelector('[class^="limit"]');
 
-      let timeRemaining = "Unknown";
+      let timeRemaining = "N/A";
       if (timeRemainingElement) {
         // Extract only text outside <span> elements
         timeRemaining =
           Array.from(timeRemainingElement.childNodes)
             .filter((node) => node.nodeType === Node.TEXT_NODE)
             .map((node) => node.textContent?.trim())
-            .join(" ") || "Unknown";
+            .join(" ") || "N/A";
       }
 
       const playersCount =
-        secondCell.querySelector(".count")?.textContent?.trim() || "Unknown";
-      if (playersCount !== "Unknown") {
+        secondCell.querySelector(".count")?.textContent?.trim() || "N/A";
+      if (playersCount !== "N/A") {
         // Regular expression to match "number/number" e.g "48/300"
         const match = playersCount.match(/^(\d+)\/(\d+)$/);
         if (match) {
@@ -166,7 +143,8 @@ test("test", async ({ page }) => {
 
   // Needed to respect typing of writeFileSync
   const stringifiedTournaments = stringifyData(tournaments);
+  writeDataToFile(uniqueFilename, stringifiedTournaments);
 
-  // Write the data to the file
-  fs.writeFileSync(uniqueFilename, stringifiedTournaments);
+  const htmlContent = generateHTMLTable(tournaments);
+  await sendEmail(htmlContent);
 });
