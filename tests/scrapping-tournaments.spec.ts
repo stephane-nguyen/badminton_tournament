@@ -111,16 +111,32 @@ test("test", async ({ page }) => {
       const location =
         firstCell.querySelector(".location")?.textContent?.trim() || "Unknown";
 
-      // Remove span elements by querying the `.limit.alert` and filtering out spans
-      const timeRemainingElement = secondCell.querySelector(".limit.alert");
-      const timeRemaining = timeRemainingElement
-        ? timeRemainingElement.textContent
-            ?.replace(/<span[^>]*>.*?<\/span>/g, "")
-            .trim() || "Unknown"
-        : "Unknown";
+      const timeRemainingElement = element.querySelector(".limit.alert");
+      let timeRemaining = "Unknown";
+      if (timeRemainingElement) {
+        // Extract only text outside <span> elements
+        timeRemaining =
+          Array.from(timeRemainingElement.childNodes)
+            .filter((node) => node.nodeType === Node.TEXT_NODE)
+            .map((node) => node.textContent?.trim())
+            .join(" ") || "Unknown";
+      }
 
       const playersCount =
         secondCell.querySelector(".count")?.textContent?.trim() || "Unknown";
+      if (playersCount !== "Unknown") {
+        // Regular expression to match "number/number" e.g "48/300"
+        const match = playersCount.match(/^(\d+)\/(\d+)$/);
+        if (match) {
+          const leftNumber = parseInt(match[1], 10);
+          const rightNumber = parseInt(match[2], 10);
+
+          // Skip this iteration/tournament
+          if (leftNumber >= rightNumber) {
+            return;
+          }
+        }
+      }
 
       data.push({ number, name, date, location, timeRemaining, playersCount });
     });
