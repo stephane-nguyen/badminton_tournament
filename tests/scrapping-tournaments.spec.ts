@@ -20,7 +20,6 @@ async function getUniqueFilename(
 }
 
 type Tournament = {
-  number: number;
   name: string;
   date: string;
   location: string;
@@ -86,7 +85,6 @@ test("test", async ({ page }) => {
     if (tournamentElements === null) {
       return [
         {
-          number: 1,
           name: "none",
           date: "none",
           location: "none",
@@ -98,20 +96,32 @@ test("test", async ({ page }) => {
 
     const data: Tournament[] = [];
 
-    tournamentElements.forEach((element, index) => {
+    tournamentElements.forEach((element) => {
       const cells = element.querySelectorAll(".cell");
       const firstCell = cells[0];
       const secondCell = cells[1];
 
-      const number = index + 1;
       const name =
         firstCell.querySelector(".name")?.textContent?.trim() || "Unknown";
+
+      // Skip internal tournaments
+      let checkInternalTournament = name.toLowerCase();
+      if (
+        checkInternalTournament.includes("intra") ||
+        checkInternalTournament.includes("interne")
+      ) {
+        return;
+      }
+
       const date =
         firstCell.querySelector(".date")?.textContent?.trim() || "Unknown";
       const location =
         firstCell.querySelector(".location")?.textContent?.trim() || "Unknown";
 
-      const timeRemainingElement = element.querySelector(".limit.alert");
+      // Inscriptions
+      // Handle all case of css class: .limit, .limit open, .limit alert...
+      const timeRemainingElement = secondCell.querySelector('[class^="limit"]');
+
       let timeRemaining = "Unknown";
       if (timeRemainingElement) {
         // Extract only text outside <span> elements
@@ -138,7 +148,7 @@ test("test", async ({ page }) => {
         }
       }
 
-      data.push({ number, name, date, location, timeRemaining, playersCount });
+      data.push({ name, date, location, timeRemaining, playersCount });
     });
     return data;
   });
