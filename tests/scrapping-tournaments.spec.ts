@@ -68,11 +68,17 @@ test("test", async ({ page }) => {
     )
     .click();
 
+  // Wait for the search results to load (adjust the selector to your needs)
+  await page.waitForSelector("#search_results .row"); // Wait for at least one tournament to appear
+
   // Scrape tournament data
   const tournaments = await page.evaluate(() => {
     // Results based on test automation
-    const searchResults = document.getElementById("search_results");
-    if (searchResults === null) {
+    const tournamentElements = document.querySelectorAll(
+      "#search_results .row"
+    );
+
+    if (tournamentElements === null) {
       return [
         {
           number: 1,
@@ -85,22 +91,24 @@ test("test", async ({ page }) => {
       ];
     }
 
-    const tournamentElements = searchResults.querySelectorAll(".row");
     const data: Tournament[] = [];
 
     tournamentElements.forEach((element, index) => {
+      const cells = element.querySelectorAll(".cell");
+      const firstCell = cells[0];
+      const secondCell = cells[1];
+
       const number = index + 1;
       const name =
-        element.querySelector(".name")?.textContent?.trim() || "Unknown";
+        firstCell.querySelector(".name")?.textContent?.trim() || "Unknown";
       const date =
-        element.querySelector(".date")?.textContent?.trim() || "Unknown";
+        firstCell.querySelector(".date")?.textContent?.trim() || "Unknown";
       const location =
-        element.querySelector(".location")?.textContent?.trim() || "Unknown";
-      const timeRemaining =
-        element.querySelector(".limit alert")?.textContent?.trim() || "Unknown";
+        firstCell.querySelector(".location")?.textContent?.trim() || "Unknown";
 
+      const timeRemaining = getTimeRemaining(secondCell);
       const playersCount =
-        element.querySelector(".count")?.textContent?.trim() || "Unknown";
+        secondCell.querySelector(".count")?.textContent?.trim() || "Unknown";
 
       data.push({ number, name, date, location, timeRemaining, playersCount });
     });
@@ -124,3 +132,14 @@ test("test", async ({ page }) => {
   // Write the data to the file
   fs.writeFileSync(uniqueFilename, stringifiedTournaments);
 });
+
+function getTimeRemaining(secondCell) {
+  // Remove span elements by querying the `.limit.alert` and filtering out spans
+  const timeRemainingElement = secondCell.querySelector(".limit.alert");
+  const timeRemaining = timeRemainingElement
+    ? timeRemainingElement.textContent
+        ?.replace(/<span[^>]*>.*?<\/span>/g, "")
+        .trim() || "Unknown"
+    : "Unknown";
+  return timeRemaining;
+}
