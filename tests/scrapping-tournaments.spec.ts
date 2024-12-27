@@ -106,7 +106,14 @@ test("test", async ({ page }) => {
       const location =
         firstCell.querySelector(".location")?.textContent?.trim() || "Unknown";
 
-      const timeRemaining = getTimeRemaining(secondCell);
+      // Remove span elements by querying the `.limit.alert` and filtering out spans
+      const timeRemainingElement = secondCell.querySelector(".limit.alert");
+      const timeRemaining = timeRemainingElement
+        ? timeRemainingElement.textContent
+            ?.replace(/<span[^>]*>.*?<\/span>/g, "")
+            .trim() || "Unknown"
+        : "Unknown";
+
       const playersCount =
         secondCell.querySelector(".count")?.textContent?.trim() || "Unknown";
 
@@ -132,14 +139,3 @@ test("test", async ({ page }) => {
   // Write the data to the file
   fs.writeFileSync(uniqueFilename, stringifiedTournaments);
 });
-
-function getTimeRemaining(secondCell) {
-  // Remove span elements by querying the `.limit.alert` and filtering out spans
-  const timeRemainingElement = secondCell.querySelector(".limit.alert");
-  const timeRemaining = timeRemainingElement
-    ? timeRemainingElement.textContent
-        ?.replace(/<span[^>]*>.*?<\/span>/g, "")
-        .trim() || "Unknown"
-    : "Unknown";
-  return timeRemaining;
-}
