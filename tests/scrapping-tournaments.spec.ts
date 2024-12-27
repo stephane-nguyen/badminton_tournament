@@ -74,6 +74,7 @@ test("test", async ({ page }) => {
   await page.waitForSelector("#search_results .row .cell", {
     state: "visible",
   });
+  await page.waitForTimeout(2000);
 
   // Scrape tournament data
   const tournaments = await page.evaluate(() => {
