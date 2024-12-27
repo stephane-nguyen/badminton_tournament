@@ -69,7 +69,11 @@ test("test", async ({ page }) => {
     .click();
 
   // Wait for the search results to load (adjust the selector to your needs)
-  await page.waitForSelector("#search_results .row"); // Wait for at least one tournament to appear
+  await page.waitForSelector("#search_results .row", { state: "visible" }); // Wait for at least one tournament to appear
+  // Wait for at least one `.cell` to appear within the rows
+  await page.waitForSelector("#search_results .row .cell", {
+    state: "visible",
+  });
 
   // Scrape tournament data
   const tournaments = await page.evaluate(() => {
@@ -125,7 +129,7 @@ test("test", async ({ page }) => {
   // Define the base name and directory for the file
   const directory = "./";
   const baseName = "tournament_list";
-  const extension = ".txt";
+  const extension = ".json";
 
   const uniqueFilename = await getUniqueFilename(
     baseName,
