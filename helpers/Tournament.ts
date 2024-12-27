@@ -12,6 +12,8 @@ export function stringifyData(tournaments: Tournament[]): string {
   return JSON.stringify(tournaments, null, 2); // Pretty-print the JSON data
 }
 export const baseURL = "https://badnet.fr";
+export const dashboardURL = baseURL + "/tableau-de-bord";
+export const rankedSearchURL = baseURL + "/recherche-competitions";
 
 export function setTournamentLink(link: string) {
   return baseURL + link;

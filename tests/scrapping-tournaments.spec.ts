@@ -1,21 +1,48 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-import { baseURL, stringifyData, Tournament } from "../helpers/Tournament";
+import {
+  baseURL,
+  dashboardURL,
+  rankedSearchURL,
+  stringifyData,
+  Tournament,
+} from "../helpers/Tournament";
 import { getUniqueFilename, writeDataToFile } from "../helpers/file";
 import { generateHTMLTable, sendEmail } from "../helpers/email";
 
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
 test("test", async ({ page }) => {
   await page.goto(baseURL);
-
+  // Login: Some tournaments are only visible to logged-in users and not accessible as a guest.
+  await page.getByRole("link", { name: "login Connexion" }).click();
+  await page
+    .getByPlaceholder("Email, licence, numéro Fédéral")
+    .fill(process.env.LICENCE_NUMBER!);
+  await page.getByPlaceholder("Mot de passe").fill(process.env.LICENCE_PASS!);
+  await page.getByRole("button", { name: "Se connecter " }).click();
+  // Access to "tableau de bord"
+  await expect(page).toHaveURL(dashboardURL);
+  // Click on "trouver une compétition"
+  await page.getByRole("link", { name: " Trouver une compétition" }).click();
+  await expect(page).toHaveURL(rankedSearchURL);
   // City
   await page.getByPlaceholder("Rechercher une ville...").click();
   await page
     .getByPlaceholder("Rechercher une ville...")
-    .fill("Neuilly-sur-Marne");
-  await page.getByText("Neuilly-sur-Marne (93, Île-de-France)").click();
+    .fill(process.env.CITY!);
+  const firstCityFromSearch = page
+    .locator(".tt-dataset.tt-dataset-citydataset > div")
+    .nth(0);
+  await firstCityFromSearch.waitFor({ state: "visible" });
+  await page.waitForTimeout(3000);
+  await firstCityFromSearch.click();
   // Km
   await page.locator("#rayon").click();
-  await page.locator("#rayon").fill("50");
+  await page.locator("#rayon").fill(process.env.RADIUS!);
   // Senior
   await page.locator("div:nth-child(2) > label").first().click();
   // Simple
@@ -157,4 +184,9 @@ test("test", async ({ page }) => {
 
   const htmlContent = generateHTMLTable(tournaments);
   await sendEmail(htmlContent);
+
+  // Log out
+  await page.getByRole("link", { name: "Mon compte " }).click();
+  await page.getByRole("link", { name: " Se déconnecter" }).click();
+  await expect(page).toHaveURL(baseURL);
 });
