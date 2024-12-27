@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import { Tournament } from "./Tournament";
+import { setTournamentLink, Tournament } from "./Tournament";
 
 // Load environment variables
 dotenv.config();
@@ -47,9 +47,10 @@ export function generateHTMLTable(tournaments: Tournament[]): string {
             </tr>`;
 
   tournaments.forEach((tournament) => {
+    const link = setTournamentLink(tournament.link);
     htmlContent += `
       <tr>
-        <td>${tournament.name}</td>
+        <td><a href="${link}" target="_blank">${tournament.name}</a></td>
         <td>${tournament.date}</td>
         <td>${tournament.location}</td>
         <td>${tournament.timeRemaining}</td>

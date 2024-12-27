@@ -1,11 +1,11 @@
 import { test } from "@playwright/test";
 
-import { stringifyData, Tournament } from "../helpers/Tournament";
+import { baseURL, stringifyData, Tournament } from "../helpers/Tournament";
 import { getUniqueFilename, writeDataToFile } from "../helpers/file";
 import { generateHTMLTable, sendEmail } from "../helpers/email";
 
 test("test", async ({ page }) => {
-  await page.goto("https://badnet.fr/");
+  await page.goto(baseURL);
 
   // City
   await page.getByPlaceholder("Rechercher une ville...").click();
@@ -62,11 +62,12 @@ test("test", async ({ page }) => {
     if (tournamentElements === null) {
       return [
         {
-          name: "none",
-          date: "none",
-          location: "none",
-          timeRemaining: "none",
-          playersCount: "0",
+          link: "N/A",
+          name: "N/A",
+          date: "N/A",
+          location: "N/A",
+          timeRemaining: "N/A",
+          playersCount: "N/A",
         },
       ];
     }
@@ -125,7 +126,16 @@ test("test", async ({ page }) => {
         }
       }
 
-      data.push({ name, date, location, timeRemaining, playersCount });
+      const link = element.getAttribute("href")!;
+
+      data.push({
+        link,
+        name,
+        date,
+        location,
+        timeRemaining,
+        playersCount,
+      });
     });
     return data;
   });
