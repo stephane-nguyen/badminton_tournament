@@ -1,0 +1,25 @@
+name: Tournament availability
+
+on:
+  schedule:
+    - cron: "0 0 */2 * *" # Runs every 2 days at midnight UTC
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Playwright Tests
+        run: npx playwright test
