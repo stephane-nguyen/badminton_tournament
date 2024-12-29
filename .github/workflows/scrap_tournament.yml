@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -22,6 +22,16 @@ jobs:
         run: |
           npm install
           npx playwright install
+
+      - name: Create .env file for the script to get secrets
+        run: |
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
+          echo "EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}" >> .env
+          echo "LICENCE_NUMBER=${{ secrets.LICENCE_NUMBER }}" >> .env
+          echo "LICENCE_PASS=${{ secrets.LICENCE_PASS }}" >> .env
+          echo "CITY=${{ secrets.CITY }}" >> .env
+          echo "RADIUS=${{ secrets.RADIUS }}" >> .env
 
       - name: Run Playwright Tests
         run: npx playwright test
