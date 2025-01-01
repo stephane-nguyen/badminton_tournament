@@ -9,7 +9,12 @@ This project scrapes information about badminton tournaments to notify users abo
 
 ## Setup
 
-Make sure you have node.js and playwright installed.
+Make sure you have node.js and playwright installed before running commands.
+
+```
+npm install
+npm playwright install
+```
 
 ### Configure Filters
 
@@ -32,6 +37,5 @@ RADIUS=radius_in_km (e.g 50)
 ### Run
 
 ```
-npm install
 npx playwright test
 ```
