@@ -34,4 +34,4 @@ jobs:
           echo "RADIUS=${{ secrets.RADIUS }}" >> .env
 
       - name: Run Playwright Tests
-        run: npx playwright test
+        run: npx playwright test --project='chromium'
