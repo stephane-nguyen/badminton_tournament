@@ -5,3 +5,4 @@ node_modules/
 /playwright/.cache/
 .env
 package-lock.json
+/scripts/secrets_google_user_content.json
