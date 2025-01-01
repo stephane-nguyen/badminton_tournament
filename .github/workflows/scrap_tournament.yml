@@ -32,6 +32,8 @@ jobs:
           echo "LICENCE_PASS=${{ secrets.LICENCE_PASS }}" >> .env
           echo "CITY=${{ secrets.CITY }}" >> .env
           echo "RADIUS=${{ secrets.RADIUS }}" >> .env
+          echo "RADIUS=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "RADIUS=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
 
       - name: Run Playwright Tests
         run: npx playwright test --project='chromium'
