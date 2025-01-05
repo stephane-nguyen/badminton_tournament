@@ -24,15 +24,19 @@ You can configure filters such as location and date range directly within the sc
 
 Create a `.env` file in the root directory and include the following fields:
 
-```env
 EMAIL_USER=your_email@gmail.com
+
 EMAIL_PASS=your_email_app_password
+
 EMAIL_RECIPIENT=recipient_email@example.com
-LICENCE_NUMBER=your_licence_number
-LICENCE_PASS=your_licence_password
+
 CITY=your_city
+
 RADIUS=radius_in_km (e.g 50)
-```
+
+~~LICENCE_NUMBER=your_licence_number~~
+
+~~LICENCE_PASS=your_licence_password~~
 
 ### Run
 
