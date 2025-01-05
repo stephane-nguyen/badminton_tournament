@@ -1,6 +1,6 @@
 # Badminton Tournament Scraper
 
-This project scrapes information about badminton tournaments to notify users about new events based on specific filters.
+This project scrapes information about badminton tournaments to notify me about tournaments.
 
 ## Features
 
