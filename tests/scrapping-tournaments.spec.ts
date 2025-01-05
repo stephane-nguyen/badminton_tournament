@@ -15,16 +15,22 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
-test("test", async ({ page }) => {
+test("Badminton scraper", async ({ page }) => {
   await page.goto(baseURL);
   // Login: Some tournaments are only visible to logged-in users and not accessible as a guest.
-  await page.getByRole("link", { name: "login Connexion" }).click();
-  await page
-    .getByPlaceholder("Email, licence, numéro Fédéral")
-    .fill(process.env.LICENCE_NUMBER!);
-  await page.getByPlaceholder("Mot de passe").fill(process.env.LICENCE_PASS!);
-  await page.getByRole("button", { name: "Se connecter " }).click();
-  // Access to "tableau de bord"
+  // await page.getByRole("link", { name: "login Connexion" }).click();
+  // await page
+  //   .getByPlaceholder("Email, licence, numéro Fédéral")
+  //   .fill(process.env.LICENCE_NUMBER!);
+  // await page.getByPlaceholder("Mot de passe").fill(process.env.LICENCE_PASS!);
+  // await page.getByRole("button", { name: "Se connecter " }).click();
+
+  // const currentUrl = page.url();
+  // if (currentUrl === validationCodeURL) {
+  //   await expect(page).toHaveURL(validationCodeURL);
+  //   const verifCode = await fetchVerificationCode();
+  // }
+  // Access to dashboard page
   await expect(page).toHaveURL(dashboardURL);
   // Click on "trouver une compétition"
   await page.getByRole("link", { name: " Trouver une compétition" }).click();
@@ -79,6 +85,12 @@ test("test", async ({ page }) => {
   });
   await page.waitForTimeout(2000);
 
+  // const moreThanTenTournaments = await page.locator("#pager").isVisible();
+  // if (moreThanTenTournaments) {
+  //   await page.locator("ic-click").getByText(">").click(); // Unwrap all pagination buttons
+  //   await page.waitForTimeout(1000); // Wait for loading
+
+  // }
   // Scrape tournament data
   const tournaments = await page.evaluate(() => {
     // Results based on test automation
