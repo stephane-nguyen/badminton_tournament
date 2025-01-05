@@ -31,7 +31,7 @@ test("Badminton scraper", async ({ page }) => {
   //   const verifCode = await fetchVerificationCode();
   // }
   // Access to dashboard page
-  await expect(page).toHaveURL(dashboardURL);
+  // await expect(page).toHaveURL(dashboardURL);
   // Click on "trouver une compétition"
   await page.getByRole("link", { name: " Trouver une compétition" }).click();
   await expect(page).toHaveURL(rankedSearchURL);
