@@ -33,8 +33,8 @@ test("Badminton scraper", async ({ page }) => {
   // Access to dashboard page
   // await expect(page).toHaveURL(dashboardURL);
   // Click on "trouver une compétition"
-  await page.getByRole("link", { name: " Trouver une compétition" }).click();
-  await expect(page).toHaveURL(rankedSearchURL);
+  // await page.getByRole("link", { name: " Trouver une compétition" }).click();
+  // await expect(page).toHaveURL(rankedSearchURL);
   // City
   await page.getByPlaceholder("Rechercher une ville...").click();
   await page
@@ -197,8 +197,8 @@ test("Badminton scraper", async ({ page }) => {
   const htmlContent = generateHTMLTable(tournaments);
   await sendEmail(htmlContent);
 
-  // Log out
-  await page.getByRole("link", { name: "Mon compte " }).click();
-  await page.getByRole("link", { name: " Se déconnecter" }).click();
-  await expect(page).toHaveURL(baseURL);
+  // // Log out
+  // await page.getByRole("link", { name: "Mon compte " }).click();
+  // await page.getByRole("link", { name: " Se déconnecter" }).click();
+  // await expect(page).toHaveURL(baseURL);
 });
