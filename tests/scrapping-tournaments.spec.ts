@@ -168,21 +168,6 @@ test("Badminton scraper", async ({ page }) => {
     newTournaments.forEach((tournament) => tournaments.add(tournament));
   }
 
-  // Define the base name and directory for the file
-  const directory = "./";
-  const baseName = "tournament_list";
-  const extension = ".json";
-
-  const uniqueFilename = await getUniqueFilename(
-    baseName,
-    extension,
-    directory
-  );
-
-  // Needed to respect typing of writeFileSync
-  const stringifiedTournaments = stringifyData(tournaments);
-  writeDataToFile(uniqueFilename, stringifiedTournaments);
-
   const htmlContent = generateHTMLTable(tournaments);
   await sendEmail(htmlContent);
 
