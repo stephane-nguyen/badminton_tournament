@@ -165,6 +165,7 @@ test("Badminton scraper", async ({ page }) => {
       });
       return data;
     });
+    newTournaments.forEach((tournament) => tournaments.add(tournament));
   }
 
   // Define the base name and directory for the file
