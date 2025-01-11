@@ -7,6 +7,10 @@ This project scrapes information about badminton tournaments to notify me.
 - Filter tournaments by location, range, date, rank, type of match (single, double, mixte), number of players.
 - Send notifications via email.
 
+## Warning
+- Tournaments with only 30 places remaining will not be display since the single men are quickly FULL so it implies for me the tournament is already FULL.
+- Up to 40 tournaments sent to emails.
+
 ## Setup
 
 Make sure you have node.js and playwright installed before running commands.
