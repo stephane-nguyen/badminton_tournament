@@ -30,7 +30,7 @@ Create a `.env` file in the root directory and include the following fields:
 
 EMAIL_USER=your_email@gmail.com
 
-EMAIL_PASS=your_email_app_password
+EMAIL_PASS=your_email_app_password (need to be configured with google password for applications)
 
 EMAIL_RECIPIENT=recipient_email@example.com
 
