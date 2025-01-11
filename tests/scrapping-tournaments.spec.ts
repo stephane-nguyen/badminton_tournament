@@ -1,12 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { Page, test } from "@playwright/test";
 
-import {
-  baseURL,
-  dashboardURL,
-  rankedSearchURL,
-  stringifyData,
-  Tournament,
-} from "../helpers/Tournament";
+import { baseURL, stringifyData, Tournament } from "../helpers/Tournament";
 import { getUniqueFilename, writeDataToFile } from "../helpers/file";
 import { generateHTMLTable, sendEmail } from "../helpers/email";
 
@@ -85,99 +79,92 @@ test("Badminton scraper", async ({ page }) => {
   });
   await page.waitForTimeout(2000);
 
-  // const moreThanTenTournaments = await page.locator("#pager").isVisible();
-  // if (moreThanTenTournaments) {
-  //   await page.locator("ic-click").getByText(">").click(); // Unwrap all pagination buttons
-  //   await page.waitForTimeout(1000); // Wait for loading
+  let tournaments = new Set<Tournament>();
+  const maxPageNumber = 4; // We assume there is no more than 40 tournaments who would be available.
 
-  // }
-  // Scrape tournament data
-  const tournaments = await page.evaluate(() => {
-    // Results based on test automation
-    const tournamentElements = document.querySelectorAll(
-      "#search_results .row"
-    );
+  for (let pageNumber = 1; pageNumber <= maxPageNumber; pageNumber++) {
+    const current = await page
+      .locator("#search_results")
+      .getByText(`${pageNumber}`, { exact: true });
 
-    if (tournamentElements === null) {
-      return [
-        {
-          link: "N/A",
-          name: "N/A",
-          date: "N/A",
-          location: "N/A",
-          timeRemaining: "N/A",
-          playersCount: "N/A",
-        },
-      ];
+    if (!(await current.isVisible())) break;
+    if (pageNumber > 1) {
+      await current.click(); // Click the page number if not the first page
+      await page.waitForTimeout(4000);
     }
 
-    const data: Tournament[] = [];
+    const newTournaments = await page.evaluate(() => {
+      const data: Tournament[] = [];
+      const tournamentElements = document.querySelectorAll(
+        "#search_results .row"
+      );
+      tournamentElements.forEach((element) => {
+        const cells = element.querySelectorAll(".cell");
+        const firstCell = cells[0];
+        const secondCell = cells[1];
 
-    tournamentElements.forEach((element) => {
-      const cells = element.querySelectorAll(".cell");
-      const firstCell = cells[0];
-      const secondCell = cells[1];
+        const name =
+          firstCell.querySelector(".name")?.textContent?.trim() || "N/A";
 
-      const name =
-        firstCell.querySelector(".name")?.textContent?.trim() || "N/A";
+        // Skip internal tournaments
+        let checkInternalTournament = name.toLowerCase();
+        if (
+          checkInternalTournament.includes("intra") ||
+          checkInternalTournament.includes("interne")
+        ) {
+          return;
+        }
 
-      // Skip internal tournaments
-      let checkInternalTournament = name.toLowerCase();
-      if (
-        checkInternalTournament.includes("intra") ||
-        checkInternalTournament.includes("interne")
-      ) {
-        return;
-      }
+        const date =
+          firstCell.querySelector(".date")?.textContent?.trim() || "N/A";
+        const location =
+          firstCell.querySelector(".location")?.textContent?.trim() || "N/A";
 
-      const date =
-        firstCell.querySelector(".date")?.textContent?.trim() || "N/A";
-      const location =
-        firstCell.querySelector(".location")?.textContent?.trim() || "N/A";
+        // Inscriptions
+        // Handle all case of css class: .limit, .limit open, .limit alert...
+        const timeRemainingElement =
+          secondCell.querySelector('[class^="limit"]');
 
-      // Inscriptions
-      // Handle all case of css class: .limit, .limit open, .limit alert...
-      const timeRemainingElement = secondCell.querySelector('[class^="limit"]');
+        let timeRemaining = "N/A";
+        if (timeRemainingElement) {
+          // Extract only text outside <span> elements
+          timeRemaining =
+            Array.from(timeRemainingElement.childNodes)
+              .filter((node) => node.nodeType === Node.TEXT_NODE)
+              .map((node) => node.textContent?.trim())
+              .join(" ") || "N/A";
+        }
 
-      let timeRemaining = "N/A";
-      if (timeRemainingElement) {
-        // Extract only text outside <span> elements
-        timeRemaining =
-          Array.from(timeRemainingElement.childNodes)
-            .filter((node) => node.nodeType === Node.TEXT_NODE)
-            .map((node) => node.textContent?.trim())
-            .join(" ") || "N/A";
-      }
-
-      const playersCount =
-        secondCell.querySelector(".count")?.textContent?.trim() || "N/A";
-      if (playersCount !== "N/A") {
-        // Regular expression to match "number/number" e.g "48/300"
-        const match = playersCount.match(/^(\d+)\/(\d+)$/);
-        if (match) {
-          const leftNumber = parseInt(match[1], 10);
-          const rightNumber = parseInt(match[2], 10);
-
-          // Skip this iteration/tournament
-          if (leftNumber >= rightNumber) {
-            return;
+        const playersCount =
+          secondCell.querySelector(".count")?.textContent?.trim() || "N/A";
+        if (playersCount !== "N/A") {
+          // Regular expression to match "number/number" e.g "48/300"
+          const match = playersCount.match(/^(\d+)\/(\d+)$/);
+          if (match) {
+            const playerRegistered = parseInt(match[1], 10);
+            const maxNumberOfPlayers = parseInt(match[2], 10);
+            const remainingPlaces = 30;
+            // Skip this iteration/tournament, we consider if the tournament is already full as Single Men mode is rapidly full.
+            if (playerRegistered >= maxNumberOfPlayers - remainingPlaces) {
+              return;
+            }
           }
         }
-      }
 
-      const link = element.getAttribute("href")!;
+        const link = element.getAttribute("href")!;
 
-      data.push({
-        link,
-        name,
-        date,
-        location,
-        timeRemaining,
-        playersCount,
+        data.push({
+          link,
+          name,
+          date,
+          location,
+          timeRemaining,
+          playersCount,
+        });
       });
+      return data;
     });
-    return data;
-  });
+  }
 
   // Define the base name and directory for the file
   const directory = "./";
@@ -201,4 +188,38 @@ test("Badminton scraper", async ({ page }) => {
   // await page.getByRole("link", { name: "Mon compte " }).click();
   // await page.getByRole("link", { name: " Se déconnecter" }).click();
   // await expect(page).toHaveURL(baseURL);
+
+  // async function getNumberOfPagination(page: Page): Promise<number | undefined> {
+  //   // Locate all <a> elements inside the <nav>
+  //   const pagerLinks = await page.locator("nav.pager ul li a");
+
+  //   // Filter the <a> elements to exclude «, ‹, ›, >>
+  //   let filteredLinks;
+  //   try {
+  //     filteredLinks = await pagerLinks.evaluateAll((links) =>
+  //       links.filter((link) => {
+  //         if (link.textContent) {
+  //           const text = link.textContent.trim();
+  //           return text !== "«" && text !== "‹" && text !== "›" && text !== "»";
+  //         }
+  //       })
+  //     );
+  //   } catch (error) {
+  //     console.error(`Error filtering link: ${error.message}`);
+  //     console.error("Filtered Links:", filteredLinks); // Will show undefined if filtering failed
+  //     return;
+  //   }
+  //   // Log the length of the filtered links
+  //   console.log(`Filtered Links Length: ${filteredLinks.length}`);
+  //   // If filtering is successful, get the last valid link
+  //   if (filteredLinks.length > 0) {
+  //     console.log(`Filtered Links: ${filteredLinks}`);
+
+  //     const lastValidLink = filteredLinks[filteredLinks.length - 1];
+  //     const lastText = lastValidLink.textContent;
+  //     if (lastText) return +lastText;
+  //   } else {
+  //     console.log("No valid <a> tags found.");
+  //   }
+  // }
 });

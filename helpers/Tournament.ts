@@ -8,7 +8,7 @@ export type Tournament = {
 };
 
 // Function to convert Tournament data to string
-export function stringifyData(tournaments: Tournament[]): string {
+export function stringifyData(tournaments: Set<Tournament>): string {
   return JSON.stringify(tournaments, null, 2); // Pretty-print the JSON data
 }
 export const baseURL = "https://badnet.fr";

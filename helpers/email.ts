@@ -32,7 +32,7 @@ export async function sendEmail(htmlContent: string) {
 }
 
 // Generate the HTML table for the tournament data
-export function generateHTMLTable(tournaments: Tournament[]): string {
+export function generateHTMLTable(tournaments: Set<Tournament>): string {
   let htmlContent = `
       <html>
         <body>
