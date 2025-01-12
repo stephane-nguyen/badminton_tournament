@@ -2,7 +2,7 @@ name: Tournament availability
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs at 00:00 UTC every day
+    - cron: "0 0 * * *" # Runs at 00:00 UTC every day
   workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          npx playwright install
+          npx playwright install --with-deps
 
       - name: Create .env file for the script to get secrets
         run: |

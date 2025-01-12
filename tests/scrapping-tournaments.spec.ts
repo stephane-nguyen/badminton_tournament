@@ -1,7 +1,6 @@
-import { Page, test } from "@playwright/test";
+import { test } from "@playwright/test";
 
-import { baseURL, stringifyData, Tournament } from "../helpers/Tournament";
-import { getUniqueFilename, writeDataToFile } from "../helpers/file";
+import { baseURL, Tournament } from "../helpers/Tournament";
 import { generateHTMLTable, sendEmail } from "../helpers/email";
 
 import dotenv from "dotenv";
@@ -11,25 +10,6 @@ dotenv.config();
 
 test("Badminton scraper", async ({ page }) => {
   await page.goto(baseURL);
-  // Login: Some tournaments are only visible to logged-in users and not accessible as a guest.
-  // await page.getByRole("link", { name: "login Connexion" }).click();
-  // await page
-  //   .getByPlaceholder("Email, licence, numéro Fédéral")
-  //   .fill(process.env.LICENCE_NUMBER!);
-  // await page.getByPlaceholder("Mot de passe").fill(process.env.LICENCE_PASS!);
-  // await page.getByRole("button", { name: "Se connecter " }).click();
-
-  // const currentUrl = page.url();
-  // if (currentUrl === validationCodeURL) {
-  //   await expect(page).toHaveURL(validationCodeURL);
-  //   const verifCode = await fetchVerificationCode();
-  // }
-  // Access to dashboard page
-  // await expect(page).toHaveURL(dashboardURL);
-  // Click on "trouver une compétition"
-  // await page.getByRole("link", { name: " Trouver une compétition" }).click();
-  // await expect(page).toHaveURL(rankedSearchURL);
-  // City
   await page.getByPlaceholder("Rechercher une ville...").click();
   await page
     .getByPlaceholder("Rechercher une ville...")
@@ -72,11 +52,12 @@ test("Badminton scraper", async ({ page }) => {
     .click();
 
   // Wait for the search results to load (adjust the selector to your needs)
-  await page.waitForSelector("#search_results .row", { state: "visible" }); // Wait for at least one tournament to appear
+  await page.waitForSelector("#search_results .row", { timeout: 10000 });
   // Wait for at least one `.cell` to appear within the rows
   await page.waitForSelector("#search_results .row .cell", {
     state: "visible",
   });
+
   await page.waitForTimeout(2000);
 
   let tournaments = new Set<Tournament>();
