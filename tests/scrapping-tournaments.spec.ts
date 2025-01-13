@@ -67,7 +67,7 @@ test("Badminton scraper", async ({ page }) => {
     const current = await page
       .locator("#search_results")
       .getByText(`${pageNumber}`, { exact: true });
-    await page.waitForTimeout(10000);
+    await page.waitForTimeout(5000);
 
     if (!(await current.isVisible())) break;
     if (pageNumber > 1) {
