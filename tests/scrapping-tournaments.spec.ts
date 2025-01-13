@@ -58,7 +58,7 @@ test("Badminton scraper", async ({ page }) => {
     state: "visible",
   });
 
-  await page.waitForTimeout(10000);
+  await page.waitForTimeout(5000);
 
   let tournaments = new Set<Tournament>();
   const maxPageNumber = 4; // We assume there is no more than 40 tournaments who would be available.
