@@ -58,7 +58,7 @@ test("Badminton scraper", async ({ page }) => {
     state: "visible",
   });
 
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(10000);
 
   let tournaments = new Set<Tournament>();
   const maxPageNumber = 4; // We assume there is no more than 40 tournaments who would be available.
@@ -67,12 +67,12 @@ test("Badminton scraper", async ({ page }) => {
     const current = await page
       .locator("#search_results")
       .getByText(`${pageNumber}`, { exact: true });
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(10000);
 
     if (!(await current.isVisible())) break;
     if (pageNumber > 1) {
       await current.click(); // Click the page number if not the first page
-      await page.waitForTimeout(4000);
+      await page.waitForTimeout(10000);
     }
 
     const newTournaments = await page.evaluate(() => {
