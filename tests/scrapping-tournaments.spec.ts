@@ -18,7 +18,7 @@ test("Badminton scraper", async ({ page }) => {
     .locator(".tt-dataset.tt-dataset-citydataset > div")
     .nth(0);
   await firstCityFromSearch.waitFor({ state: "visible" });
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(10000);
   await firstCityFromSearch.click();
   // Km
   await page.locator("#rayon").click();
