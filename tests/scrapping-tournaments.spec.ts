@@ -18,7 +18,7 @@ test("Badminton scraper", async ({ page }) => {
     .locator(".tt-dataset.tt-dataset-citydataset > div")
     .nth(0);
   await firstCityFromSearch.waitFor({ state: "visible" });
-  await page.waitForTimeout(10000);
+  await page.waitForTimeout(6000);
   await firstCityFromSearch.click();
   // Km
   await page.locator("#rayon").click();
@@ -72,7 +72,7 @@ test("Badminton scraper", async ({ page }) => {
     if (!(await current.isVisible())) break;
     if (pageNumber > 1) {
       await current.click(); // Click the page number if not the first page
-      await page.waitForTimeout(8000);
+      await page.waitForTimeout(5000);
     }
 
     const newTournaments = await page.evaluate(() => {
