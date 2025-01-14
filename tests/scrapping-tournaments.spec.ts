@@ -52,13 +52,13 @@ test("Badminton scraper", async ({ page }) => {
     .click();
 
   // Wait for the search results to load (adjust the selector to your needs)
-  await page.waitForSelector("#search_results .row", { timeout: 10000 });
+  await page.waitForSelector("#search_results .row", { timeout: 7500 });
   // Wait for at least one `.cell` to appear within the rows
   await page.waitForSelector("#search_results .row .cell", {
     state: "visible",
   });
 
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(4000);
 
   let tournaments = new Set<Tournament>();
   const maxPageNumber = 4; // We assume there is no more than 40 tournaments who would be available.
@@ -72,7 +72,7 @@ test("Badminton scraper", async ({ page }) => {
     if (!(await current.isVisible())) break;
     if (pageNumber > 1) {
       await current.click(); // Click the page number if not the first page
-      await page.waitForTimeout(10000);
+      await page.waitForTimeout(8000);
     }
 
     const newTournaments = await page.evaluate(() => {
