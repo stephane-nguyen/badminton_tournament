@@ -12,21 +12,24 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
+const city = "Neuilly-sur-Marne";
+const radius = "60";
+
 test("Badminton Simple P12", async ({ page }) => {
-  test.setTimeout(60000);
+  test.setTimeout(80000);
   await page.goto(baseURL);
-  await page
-    .getByPlaceholder("Rechercher une ville...")
-    .fill(process.env.CITY!);
+  await page.getByPlaceholder("Rechercher une ville...").click();
+  await page.getByPlaceholder("Rechercher une ville...").fill(city);
+  await page.waitForTimeout(6000);
   const firstCityFromSearch = page
     .locator(".tt-dataset.tt-dataset-citydataset > div")
     .nth(0);
   await firstCityFromSearch.waitFor({ state: "visible" });
-  await page.waitForTimeout(6000);
   await firstCityFromSearch.click();
+  await page.waitForTimeout(3000);
   // Km
   await page.locator("#rayon").click();
-  await page.locator("#rayon").fill(process.env.RADIUS!);
+  await page.locator("#rayon").fill(radius);
   // Senior
   await page.locator("div:nth-child(2) > label").first().click();
   // Simple
@@ -56,7 +59,7 @@ test("Badminton Simple P12", async ({ page }) => {
     .click();
 
   // Wait for the search results to load (adjust the selector to your needs)
-  await page.waitForSelector("#search_results .row", { timeout: 7500 });
+  await page.waitForSelector("#search_results .row", { timeout: 10000 });
   // Wait for at least one `.cell` to appear within the rows
   await page.waitForSelector("#search_results .row .cell", {
     state: "visible",

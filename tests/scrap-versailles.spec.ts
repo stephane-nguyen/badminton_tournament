@@ -17,15 +17,17 @@ import dotenv from "dotenv";
 dotenv.config();
 
 test("Badminton Versailles 30km Double Mixte", async ({ page }) => {
-  test.setTimeout(60000);
+  test.setTimeout(80000);
   await page.goto(baseURL);
+  await page.getByPlaceholder("Rechercher une ville...").click();
   await page.getByPlaceholder("Rechercher une ville...").fill("Versailles");
+  await page.waitForTimeout(10000);
   const firstCityFromSearch = page
     .locator(".tt-dataset.tt-dataset-citydataset > div")
     .nth(0);
   await firstCityFromSearch.waitFor({ state: "visible" });
-  await page.waitForTimeout(3000);
   await firstCityFromSearch.click();
+  await page.waitForTimeout(3000);
   // Km
   await page.locator("#rayon").click();
   await page.locator("#rayon").fill("30");
@@ -68,7 +70,7 @@ test("Badminton Versailles 30km Double Mixte", async ({ page }) => {
     state: "visible",
   });
 
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(4000);
 
   let tournaments = new Set<Tournament>();
   const maxPageNumber = 4; // We assume there is no more than 40 tournaments who would be available.
