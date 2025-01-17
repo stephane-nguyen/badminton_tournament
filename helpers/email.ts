@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { setTournamentLink, Tournament } from "./Tournament";
+import { researchSimpleRankP } from "./common";
 
 // Load environment variables
 dotenv.config();
@@ -18,7 +19,7 @@ export async function sendEmail(htmlContent: string) {
   const mailOptions = {
     from: process.env.EMAIL_USER, // Sender address
     to: process.env.EMAIL_RECIPIENT, // Recipient address
-    subject: "Badminton Tournament List",
+    subject: researchSimpleRankP,
     html: htmlContent, // HTML content
   };
 
@@ -36,7 +37,7 @@ export function generateHTMLTable(tournaments: Set<Tournament>): string {
   let htmlContent = `
       <html>
         <body>
-          <h1>Badminton Tournament List</h1>
+          <h1>Badminton Tournaments</h1>
           <table border="1" cellpadding="5" cellspacing="0">
             <tr>
               <th>Name</th>

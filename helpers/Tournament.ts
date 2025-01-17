@@ -19,3 +19,19 @@ export const baseURL = "https://badnet.fr";
 export function setTournamentLink(link: string) {
   return baseURL + link;
 }
+
+export function deduplicateTournaments(
+  tournaments: Set<Tournament>
+): Set<Tournament> {
+  const uniqueTournaments = new Map<string, Tournament>();
+
+  tournaments.forEach((tournament) => {
+    // Create a unique key based on properties to identify duplicates
+    const key = `${tournament.name}-${tournament.date}-${tournament.location}`;
+    if (!uniqueTournaments.has(key)) {
+      uniqueTournaments.set(key, tournament);
+    }
+  });
+
+  return new Set(uniqueTournaments.values());
+}
