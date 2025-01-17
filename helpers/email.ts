@@ -9,7 +9,7 @@ dotenv.config();
 // Define the type for the mail options
 type MailOptions = {
   from: string | undefined;
-  to: string | string[] | undefined;
+  to: string | (string | undefined)[] | undefined;
   subject: string;
   html: string;
 };
@@ -29,7 +29,8 @@ export function getMailOptions(htmlContent: string) {
 export function getMailOptionsVersailles(htmlContent: string): MailOptions {
   return {
     from: process.env.EMAIL_USER, // Sender address
-    to: process.env.EMAIL_RECIPIENT2,
+    to: [process.env.EMAIL_RECIPIENT, process.env.EMAIL_RECIPIENT2], // Multiple recipients
+
     subject: researchDoubleMixteRankD,
     html: htmlContent,
   };
