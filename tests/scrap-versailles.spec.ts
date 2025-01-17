@@ -5,7 +5,11 @@ import {
   deduplicateTournaments,
   Tournament,
 } from "../helpers/Tournament";
-import { generateHTMLTable, sendEmail } from "../helpers/email";
+import {
+  generateHTMLTable,
+  getMailOptionsVersailles,
+  sendEmail,
+} from "../helpers/email";
 
 import dotenv from "dotenv";
 
@@ -15,7 +19,6 @@ dotenv.config();
 test("Badminton Versailles 30km Double Mixte", async ({ page }) => {
   test.setTimeout(60000);
   await page.goto(baseURL);
-  await page.getByPlaceholder("Rechercher une ville...").click();
   await page.getByPlaceholder("Rechercher une ville...").fill("Versailles");
   const firstCityFromSearch = page
     .locator(".tt-dataset.tt-dataset-citydataset > div")
@@ -156,5 +159,5 @@ test("Badminton Versailles 30km Double Mixte", async ({ page }) => {
   tournaments = deduplicateTournaments(tournaments);
 
   const htmlContent = generateHTMLTable(tournaments);
-  await sendEmail(htmlContent);
+  await sendEmail(getMailOptionsVersailles(htmlContent));
 });

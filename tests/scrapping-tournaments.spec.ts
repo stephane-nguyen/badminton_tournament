@@ -5,7 +5,7 @@ import {
   deduplicateTournaments,
   Tournament,
 } from "../helpers/Tournament";
-import { generateHTMLTable, sendEmail } from "../helpers/email";
+import { generateHTMLTable, getMailOptions, sendEmail } from "../helpers/email";
 
 import dotenv from "dotenv";
 
@@ -15,7 +15,6 @@ dotenv.config();
 test("Badminton Simple P12", async ({ page }) => {
   test.setTimeout(60000);
   await page.goto(baseURL);
-  await page.getByPlaceholder("Rechercher une ville...").click();
   await page
     .getByPlaceholder("Rechercher une ville...")
     .fill(process.env.CITY!);
@@ -157,7 +156,7 @@ test("Badminton Simple P12", async ({ page }) => {
   tournaments = deduplicateTournaments(tournaments);
 
   const htmlContent = generateHTMLTable(tournaments);
-  await sendEmail(htmlContent);
+  await sendEmail(getMailOptions(htmlContent));
 
   // // Log out
   // await page.getByRole("link", { name: "Mon compte " }).click();

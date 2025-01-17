@@ -28,6 +28,7 @@ jobs:
           echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
           echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
           echo "EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}" >> .env
+          echo "EMAIL_RECIPIENT2=${{ secrets.EMAIL_RECIPIENT_2 }}" >> .env
           echo "CITY=${{ secrets.CITY }}" >> .env
           echo "RADIUS=${{ secrets.RADIUS }}" >> .env
 

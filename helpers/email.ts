@@ -1,13 +1,41 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { setTournamentLink, Tournament } from "./Tournament";
-import { researchSimpleRankP } from "./common";
+import { researchDoubleMixteRankD, researchSimpleRankP } from "./common";
 
 // Load environment variables
 dotenv.config();
 
+// Define the type for the mail options
+type MailOptions = {
+  from: string | undefined;
+  to: string | string[] | undefined;
+  subject: string;
+  html: string;
+};
+
+// Define the callback type
+type GetMailOptions = (htmlContent: string) => MailOptions;
+
+export function getMailOptions(htmlContent: string) {
+  return {
+    from: process.env.EMAIL_USER, // Sender address
+    to: process.env.EMAIL_RECIPIENT, // Recipient address
+    subject: researchSimpleRankP, // Subject
+    html: htmlContent, // HTML content
+  };
+}
+
+export function getMailOptionsVersailles(htmlContent: string): MailOptions {
+  return {
+    from: process.env.EMAIL_USER, // Sender address
+    to: process.env.EMAIL_RECIPIENT2,
+    subject: researchDoubleMixteRankD,
+    html: htmlContent,
+  };
+}
 // Send the email with the tournament data
-export async function sendEmail(htmlContent: string) {
+export async function sendEmail(mailOptions: MailOptions) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -15,13 +43,6 @@ export async function sendEmail(htmlContent: string) {
       pass: process.env.EMAIL_PASS,
     },
   });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER, // Sender address
-    to: process.env.EMAIL_RECIPIENT, // Recipient address
-    subject: researchSimpleRankP,
-    html: htmlContent, // HTML content
-  };
 
   // Send the email
   try {
