@@ -158,6 +158,14 @@ test("Badminton Simple P12", async ({ page }) => {
   // Remove duplicates
   tournaments = deduplicateTournaments(tournaments);
 
+  // Navigate to each tournament page to get registration opening
+  for (const tournament of tournaments) {
+    await page.goto(baseURL + tournament.link);
+    const registrationOpening =
+      (await page.locator(".limit p").first().textContent()) || "N/A";
+    tournament.registrationOpening = registrationOpening;
+  }
+
   const htmlContent = generateHTMLTable(tournaments);
   await sendEmail(getMailOptions(htmlContent));
 

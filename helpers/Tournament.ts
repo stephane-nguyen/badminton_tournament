@@ -4,6 +4,7 @@ export type Tournament = {
   date: string;
   location: string;
   timeRemaining: string;
+  registrationOpening?: string;
   playersCount: string;
 };
 
