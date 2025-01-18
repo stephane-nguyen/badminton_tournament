@@ -26,14 +26,14 @@ export function getMailOptions(htmlContent: string) {
   };
 }
 
-// export function getMailOptionsVersailles(htmlContent: string): MailOptions {
-//   return {
-//     from: process.env.EMAIL_USER, // Sender address
-//     to: [process.env.EMAIL_RECIPIENT, process.env.EMAIL_RECIPIENT2], // Multiple recipients
-//     subject: researchDoubleMixteRankD,
-//     html: htmlContent,
-//   };
-// }
+export function getMailOptionsVersailles(htmlContent: string): MailOptions {
+  return {
+    from: process.env.EMAIL_USER, // Sender address
+    to: [process.env.EMAIL_RECIPIENT, process.env.EMAIL_RECIPIENT2], // Multiple recipients
+    subject: researchDoubleMixteRankD,
+    html: htmlContent,
+  };
+}
 // Send the email with the tournament data
 export async function sendEmail(mailOptions: MailOptions) {
   const transporter = nodemailer.createTransport({

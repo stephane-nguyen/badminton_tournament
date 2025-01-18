@@ -92,7 +92,7 @@ test("Badminton Simple P12", async ({ page }) => {
         const secondCell = cells[1];
 
         const name =
-          firstCell.querySelector(".name")?.textContent?.trim() || "N/A";
+          firstCell.querySelector(".name")?.textContent?.trim() || "-";
 
         // Skip internal tournaments
         let checkInternalTournament = name.toLowerCase();
@@ -104,28 +104,28 @@ test("Badminton Simple P12", async ({ page }) => {
         }
 
         const date =
-          firstCell.querySelector(".date")?.textContent?.trim() || "N/A";
+          firstCell.querySelector(".date")?.textContent?.trim() || "-";
         const location =
-          firstCell.querySelector(".location")?.textContent?.trim() || "N/A";
+          firstCell.querySelector(".location")?.textContent?.trim() || "-";
 
         // Inscriptions
         // Handle all case of css class: .limit, .limit open, .limit alert...
         const timeRemainingElement =
           secondCell.querySelector('[class^="limit"]');
 
-        let timeRemaining = "N/A";
+        let timeRemaining = "-";
         if (timeRemainingElement) {
           // Extract only text outside <span> elements
           timeRemaining =
             Array.from(timeRemainingElement.childNodes)
               .filter((node) => node.nodeType === Node.TEXT_NODE)
               .map((node) => node.textContent?.trim())
-              .join(" ") || "N/A";
+              .join(" ") || "-";
         }
 
         const playersCount =
-          secondCell.querySelector(".count")?.textContent?.trim() || "N/A";
-        if (playersCount !== "N/A") {
+          secondCell.querySelector(".count")?.textContent?.trim() || "-";
+        if (playersCount !== "-") {
           // Regular expression to match "number/number" e.g "48/300"
           const match = playersCount.match(/^(\d+)\/(\d+)$/);
           if (match) {
@@ -162,7 +162,7 @@ test("Badminton Simple P12", async ({ page }) => {
   for (const tournament of tournaments) {
     await page.goto(baseURL + tournament.link);
     const registrationOpening =
-      (await page.locator(".limit p span").first().textContent()) || "N/A";
+      (await page.locator(".limit p span").first().textContent()) || "-";
     tournament.registrationOpening = registrationOpening;
   }
 
