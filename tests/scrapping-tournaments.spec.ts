@@ -162,7 +162,7 @@ test("Badminton Simple P12", async ({ page }) => {
   for (const tournament of tournaments) {
     await page.goto(baseURL + tournament.link);
     const registrationOpening =
-      (await page.locator(".limit p").first().textContent()) || "N/A";
+      (await page.locator(".limit p span").first().textContent()) || "N/A";
     tournament.registrationOpening = registrationOpening;
   }
 
