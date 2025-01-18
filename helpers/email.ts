@@ -26,14 +26,14 @@ export function getMailOptions(htmlContent: string) {
   };
 }
 
-export function getMailOptionsVersailles(htmlContent: string): MailOptions {
-  return {
-    from: process.env.EMAIL_USER, // Sender address
-    to: [process.env.EMAIL_RECIPIENT, process.env.EMAIL_RECIPIENT2], // Multiple recipients
-    subject: researchDoubleMixteRankD,
-    html: htmlContent,
-  };
-}
+// export function getMailOptionsVersailles(htmlContent: string): MailOptions {
+//   return {
+//     from: process.env.EMAIL_USER, // Sender address
+//     to: [process.env.EMAIL_RECIPIENT, process.env.EMAIL_RECIPIENT2], // Multiple recipients
+//     subject: researchDoubleMixteRankD,
+//     html: htmlContent,
+//   };
+// }
 // Send the email with the tournament data
 export async function sendEmail(mailOptions: MailOptions) {
   const transporter = nodemailer.createTransport({
@@ -65,7 +65,8 @@ export function generateHTMLTable(tournaments: Set<Tournament>): string {
               <th>Date</th>
               <th>Location</th>
               <th>Time Remaining</th>
-              <th>Players Count</th>
+              <th>Registration Opening</th>
+              <th>Players</th>
             </tr>`;
 
   tournaments.forEach((tournament) => {
@@ -76,6 +77,7 @@ export function generateHTMLTable(tournaments: Set<Tournament>): string {
         <td>${tournament.date}</td>
         <td>${tournament.location}</td>
         <td>${tournament.timeRemaining}</td>
+        <td>${tournament.registrationOpening}</td>
         <td>${tournament.playersCount}</td>
       </tr>`;
   });
