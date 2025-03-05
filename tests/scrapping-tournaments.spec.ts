@@ -163,7 +163,7 @@ test("Badminton Simple P12", async ({ page }) => {
     await page.goto(baseURL + tournament.link);
     //const registrationOpening =
     //  (await page.locator(".limit p span").first().textContent()) || "-";
-    const registrationOpeningSpan = await page.locator(".limit p span").first().waitFor({ timeout: 5000 }).catch(() => null);
+    const registrationOpeningSpan = await page.locator(".limit p span").first().waitFor({ timeout: 15000 }).catch(() => null);
     const registrationOpening = registrationOpeningSpan ? await registrationOpeningSpan.textContent() : "-";
     tournament.registrationOpening = registrationOpening;
   }
