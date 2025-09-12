@@ -19,8 +19,8 @@ dotenv.config();
 test("Badminton Versailles 30km Double Mixte", async ({ page }) => {
   test.setTimeout(80000);
   await page.goto(baseURL);
-  await page.getByPlaceholder("Rechercher une ville...").click();
-  await page.getByPlaceholder("Rechercher une ville...").fill("Versailles");
+  await page.locator('#ac_city').click();
+  await page.locator('#ac_city').fill('Versailles');
   await page.waitForTimeout(10000);
   const firstCityFromSearch = page
     .locator(".tt-dataset.tt-dataset-citydataset > div")
