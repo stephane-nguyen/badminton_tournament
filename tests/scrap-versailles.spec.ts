@@ -163,8 +163,10 @@ test("Badminton Versailles 30km Double Mixte", async ({ page }) => {
   // Navigate to each tournament page to get registration opening
   for (const tournament of tournaments) {
     await page.goto(baseURL + tournament.link);
-    const registrationOpening =
-      (await page.locator(".limit p span").first().textContent()) || "-";
+   // const registrationOpening =
+    //  (await page.locator(".limit p span").first().textContent()) || "-";
+    const registrationOpeningSpan = await page.locator(".limit p span").first().waitFor({ timeout: 15000 }).catch(() => null);
+    const registrationOpening = registrationOpeningSpan ? await registrationOpeningSpan.textContent() : "-";
     tournament.registrationOpening = registrationOpening;
   }
 
